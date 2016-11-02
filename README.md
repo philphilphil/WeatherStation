@@ -11,6 +11,7 @@ A seperate webview displays the data with a graph.
 ## Code
 - Server: The php script which gets the data from the arduino and saves it into json
   - you need to set a secretKey here which is used for "authentication"
+  - because arduino can't do SSL, the request is unencrypted, so if someone sniffes your key in your local network he could send false temperatures
 - arduino: The arduino firmware which reads temps and sends them via http to the server
   - the http-request also needs the secretKey
 - WebView: small web page to show a graph and current temps
