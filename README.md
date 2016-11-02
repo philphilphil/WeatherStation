@@ -1,5 +1,7 @@
 # WeatherStation
-Arduino powered weather station with 3D-Printed enclosure
+Arduino powered weather station with 3D-Printed enclosure.
+Arduino reads temperatures and humidity and sends it over http to a php-script which simply saves the values into a .json file.
+A seperate webview displays the data with a graph.
 
 ## Hardware
 - Arduino Uno + Ethernet Shield
