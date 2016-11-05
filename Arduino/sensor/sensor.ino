@@ -1,6 +1,8 @@
 #include <SPI.h>
 #include <Ethernet.h>
 #include <OneWire.h>
+#include <Wire.h>
+#include "Adafruit_HTU21DF.h"
 
 //Ethernet shield
 byte mac[] = { 0xDE, 0xAD, 0xBE, 0xEF, 0xFE, 0xED };
@@ -13,54 +15,47 @@ int sensorPin = 2;
 OneWire ds(sensorPin);
 
 //sensor 2 - outdor temp/hum
+Adafruit_HTU21DF htu = Adafruit_HTU21DF();
 
 void setup(void) {
   Serial.println("setup...");
   Serial.begin(9600);
   while (!Serial) {
-    ; // wait for serial port to connect. Needed for native USB port only
+    ; // wait for serial port to connect . Needed for native USB port only
   }
 
-  // start the Ethernet connection:
-  if (Ethernet.begin(mac) == 0) {
-    Serial.println("Failed to configure Ethernet using DHCP");
-    // try to congifure using IP address instead of DHCP:
-    Ethernet.begin(mac, ip);
+  if (!htu.begin()) {
+    Serial.println("Couldn't find HTU21DF-sensor!");
+    while (1);
   }
-  // give the Ethernet shield a second to initialize:
+
+  Ethernet.begin(mac);
   delay(1000);
 }
 
 void loop(void) {
-  float temperature = getTemp();
-  //Serial.println(temperature);
-  String strTemp =  String(temperature, 0);
+  float tempInside = getTemp();
+  float tempOutside = htu.readTemperature();
+  float humOutside = htu.readHumidity();
+  String strTempi =  String(tempInside, 0);
+  String strTempo =  String(tempOutside, 0);
+  String strHum =  String(humOutside, 0);
 
+  Serial.println("GET /weather/index.php?tempi=" + strTempi + "&tempo=" + strTempo + "&humo=" + strHum);
 
-if (client.connect(server, 80)) {
-    //Serial.println("sending request to server");
-    // Make a HTTP request:
-    client.println("GET /weather/index.php?temp=" + strTemp + "&key=secretKey HTTP/1.1");
+  if (client.connect(server, 80)) {
+    Serial.println("sending request to server");
+    client.println("GET /weather/index.php?tempi=" + strTempi + "&tempo=" + strTempo + "&humo=" + strHum + "&key=secretKey HTTP/1.1");
     client.println("Host: bckp.de");
     client.println("Connection: close");
     client.println();
   } else {
-    // if you didn't get a connection to the server:
     Serial.println("connection failed");
   }
- 
-  // if the server's disconnected, stop the client:
-  if (!client.connected()) {
-    Serial.println("disconnecting.");
-    client.stop();
 
-    // do nothing forevermore:
-    while (true);
-  }
   client.stop();
 
-  delay(60000); //every 1 minute
-
+  delay(60000*5); //every 5 minutes
 }
 
 
