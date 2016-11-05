@@ -3,6 +3,8 @@ Arduino powered weather station with 3D-Printed enclosure.
 Arduino reads temperatures and humidity and sends it over http to a php-script which simply saves the values into a .json file.
 A seperate webview displays the data with a graph.
 
+My measurements: https://weather.phib.io/
+
 ## Hardware
 - Arduino Uno + Ethernet Shield
 - DS18F20 sensor for indoor temp
