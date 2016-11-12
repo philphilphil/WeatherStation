@@ -37,12 +37,17 @@ void loop(void) {
   float tempInside = getTemp();
   float tempOutside = htu.readTemperature();
   float humOutside = htu.readHumidity();
+
+  //Serial.println(tempOutside);
   String strTempi =  String(tempInside, 0);
   String strTempo =  String(tempOutside, 0);
   String strHum =  String(humOutside, 0);
 
-  Serial.println("GET /weather/index.php?tempi=" + strTempi + "&tempo=" + strTempo + "&humo=" + strHum);
-
+  //remove leading and ending white spaces 
+  strTempo.trim();
+  strHum.trim();
+  strTempi.trim();
+  
   if (client.connect(server, 80)) {
     Serial.println("sending request to server");
     client.println("GET /weather/index.php?tempi=" + strTempi + "&tempo=" + strTempo + "&humo=" + strHum + "&key=secretKey HTTP/1.1");
